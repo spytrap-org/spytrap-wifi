@@ -1,0 +1,12 @@
+[Unit]
+Description=spytrap service
+
+[Service]
+ExecStart=/spytrap/bin start -f /etc/hostapd/hostapd.conf -i wlan0 -x /spytrap/screen.py -S /run/spytrap.sock
+WorkingDirectory=/spytrap
+
+Restart=always
+RestartSec=1
+
+[Install]
+WantedBy=multi-user.target

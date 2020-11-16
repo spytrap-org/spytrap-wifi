@@ -1,0 +1,81 @@
+- name: create directories
+  file:
+    path: '{{ item }}'
+    state: directory
+  with_items:
+  - /spytrap
+  - /etc/systemd/system/dnsmasq.service.d
+
+- name: deploy spytrap
+  copy:
+    src: files/{{ item.name }}
+    dest: '{{ item.dest }}'
+    mode: '{{ item.mode }}'
+  with_items:
+  - name: ../../../target/arm-unknown-linux-gnueabihf/release/spytrap
+    dest: /spytrap/bin
+    mode: '0755'
+  - name: ../../../network.csv
+    dest: /spytrap/network.csv
+    mode: '0644'
+  - name: waveshare.py
+    dest: /spytrap/waveshare.py
+    mode: '0644'
+  - name: screen.py
+    dest: /spytrap/screen.py
+    mode: '0755'
+  - name: hostapd-hook.sh
+    dest: /spytrap/hostapd-hook.sh
+    mode: '0755'
+  # systemd
+  - name: spytrap.service
+    dest: /etc/systemd/system/spytrap.service
+    mode: '0644'
+  - name: hostapd-hook.service
+    dest: /etc/systemd/system/hostapd-hook.service
+    mode: '0644'
+  - name: socat-catch.service
+    dest: /etc/systemd/system/socat-catch.service
+    mode: '0644'
+  - name: dnsmasq-override.conf
+    dest: /etc/systemd/system/dnsmasq.service.d/override.conf
+    mode: '0644'
+  # system
+  - name: boot-config.txt
+    dest: /boot/config.txt
+    mode: '0644'
+  - name: nginx.conf
+    dest: /etc/nginx/nginx.conf
+    mode: '0644'
+  - name: wlan0.network
+    dest: /etc/systemd/network/wlan0.network
+    mode: '0644'
+  - name: usb0.network
+    dest: /etc/systemd/network/usb0.network
+    mode: '0644'
+  - name: dnsmasq.conf
+    dest: /etc/dnsmasq.conf
+    mode: '0644'
+  - name: wpa_supplicant.conf
+    dest: /etc/wpa_supplicant/wpa_supplicant-wlan1.conf
+    mode: '0644'
+
+- name: systemctl daemon-reload
+  systemd:
+    daemon_reload: yes
+
+- name: setup services
+  service:
+    name: '{{ item }}'
+    state: started
+    enabled: yes
+  with_items:
+  - spytrap
+  #- hostapd-hook
+  - socat-catch
+  - nginx
+  - dnsmasq
+  - hostapd
+  - systemd-networkd
+  - wpa_supplicant@wlan1
+  - dhcpcd@wlan1

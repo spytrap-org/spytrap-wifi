@@ -1,0 +1,11 @@
+[Unit]
+Description=socat 443 dummy server
+
+[Service]
+ExecStart=/usr/bin/socat TCP-LISTEN:443,reuseaddr,fork EXEC:'/root/catch.sh'
+
+Restart=always
+RestartSec=1
+
+[Install]
+WantedBy=multi-user.target

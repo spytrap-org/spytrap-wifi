@@ -1,0 +1,11 @@
+[Unit]
+Description=spytrap: hostapd hook
+
+[Service]
+ExecStart=/usr/bin/hostapd_cli -a /spytrap/hostapd-hook.sh
+
+Restart=always
+RestartSec=1
+
+[Install]
+WantedBy=multi-user.target
