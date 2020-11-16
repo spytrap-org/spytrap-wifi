@@ -1,0 +1,6 @@
+[Match]
+Name=wlan1
+
+[Network]
+Address=10.38.73.1/24
+IPForward=ipv4

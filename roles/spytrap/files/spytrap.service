@@ -2,7 +2,7 @@
 Description=spytrap service
 
 [Service]
-ExecStart=/spytrap/bin start -f /etc/hostapd/hostapd.conf -i wlan0 -x /spytrap/screen.py -S /run/spytrap.sock
+ExecStart=/spytrap/bin start -f /etc/hostapd/hostapd.conf -i wlan1 -x /spytrap/screen.py -S /run/spytrap.sock
 WorkingDirectory=/spytrap
 
 Restart=always

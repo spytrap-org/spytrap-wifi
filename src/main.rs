@@ -55,7 +55,7 @@ async fn hotspot<R: Stream<Item=String> + Unpin, S: Sink<String> + Unpin>(mut st
         let pw = hostapd::pwgen();
 
         info!("Writing hostapd config");
-        hostapd::write_config(path, "wlan0", ssid, &pw).await
+        hostapd::write_config(path, "wlan1", ssid, &pw).await
             .context("Failed to write hostapd config")?;
         info!("Restarting hostapd");
         hostapd::restart().await.ok();

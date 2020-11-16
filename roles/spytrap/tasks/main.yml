@@ -50,6 +50,9 @@
   - name: wlan0.network
     dest: /etc/systemd/network/wlan0.network
     mode: '0644'
+  - name: wlan1.network
+    dest: /etc/systemd/network/wlan1.network
+    mode: '0644'
   - name: usb0.network
     dest: /etc/systemd/network/usb0.network
     mode: '0644'
@@ -57,7 +60,10 @@
     dest: /etc/dnsmasq.conf
     mode: '0644'
   - name: wpa_supplicant.conf
-    dest: /etc/wpa_supplicant/wpa_supplicant-wlan1.conf
+    dest: /etc/wpa_supplicant/wpa_supplicant-wlan0.conf
+    mode: '0644'
+  - name: iptables
+    dest: /etc/iptables/iptables.rules
     mode: '0644'
 
 - name: systemctl daemon-reload
@@ -72,10 +78,10 @@
   with_items:
   - spytrap
   #- hostapd-hook
-  - socat-catch
-  - nginx
+  #- socat-catch
+  #- nginx
   - dnsmasq
   - hostapd
+  - iptables
   - systemd-networkd
-  - wpa_supplicant@wlan1
-  - dhcpcd@wlan1
+  - wpa_supplicant@wlan0
