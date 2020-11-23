@@ -11,7 +11,7 @@ use spytrap::json;
 use spytrap::ioc;
 use spytrap::rpc;
 use spytrap::stdio;
-use std::collections::HashSet;
+use spytrap::suffix::SuffixTree;
 use std::process::Stdio;
 use tokio::process::Command;
 use tokio::io::AsyncWriteExt;
@@ -19,13 +19,13 @@ use tokio::io::{BufReader, AsyncBufReadExt};
 
 
 // this function must not error or panic
-async fn process<S: Sink<String> + Unpin>(line: &[u8], iocs: &HashSet<String>, sink: &mut S) {
+async fn process<S: Sink<String> + Unpin>(line: &[u8], iocs: &SuffixTree<String>, sink: &mut S) {
     if let Ok(pkt) = json::parse(line) {
         let names = pkt.get_names();
         for (src, name) in names {
-            if iocs.contains(&name) {
+            if iocs.matches(&name) {
                 warn!("detected({}): {:?}", src.as_str(), name);
-                send(sink, format!("[-] detected({}): {:?}", src.as_str(), name)).await.ok();
+                send(sink, format!("[!] detected({}): {:?}", src.as_str(), name)).await.ok();
             } else {
                 debug!("observed({}): {:?}", src.as_str(), name);
             }

@@ -5,3 +5,4 @@ pub mod json;
 pub mod ioc;
 pub mod hostapd;
 pub mod rpc;
+pub mod suffix;

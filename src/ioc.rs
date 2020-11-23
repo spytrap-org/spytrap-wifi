@@ -1,6 +1,6 @@
 use crate::errors::*;
 use serde::Deserialize;
-use std::collections::HashSet;
+use crate::suffix::SuffixTree;
 use std::fs;
 use std::path::Path;
 
@@ -14,20 +14,20 @@ struct IOC {
     app: String,
 }
 
-pub fn load<P: AsRef<Path>>(path: P) -> Result<HashSet<String>> {
+pub fn load<P: AsRef<Path>>(path: P) -> Result<SuffixTree<String>> {
     let list = fs::read(path)?;
     parse_domain_iocs(&list)
 }
 
-fn parse_domain_iocs(buf: &[u8]) -> Result<HashSet<String>> {
+fn parse_domain_iocs(buf: &[u8]) -> Result<SuffixTree<String>> {
     let mut rdr = csv::Reader::from_reader(buf);
 
-    let mut iocs = HashSet::new();
+    let mut iocs = SuffixTree::new();
     for result in rdr.deserialize() {
         let ioc: IOC = result?;
         if ioc.t == "domain" {
             debug!("Loaded ioc: {:?}", ioc);
-            iocs.insert(ioc.indicator);
+            iocs.insert(&ioc.indicator);
         }
     }
     Ok(iocs)
@@ -67,7 +67,7 @@ domain,97.logger.mobi,Easy Logger
             "97.logger.mobi",
             "webservicesdb.mobiispy.com",
         ];
-        let expected = HashSet::from_iter(expected.iter().cloned().map(String::from));
+        let expected = SuffixTree::from_iter(expected.iter().cloned().map(String::from));
         assert_eq!(iocs, expected);
     }
 }
