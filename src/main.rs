@@ -177,9 +177,9 @@ async fn main() -> Result<()> {
             let (tx1, rx1) = futures::channel::mpsc::channel(256);
             let (mut tx2, rx2) = futures::channel::mpsc::channel(256);
             select! {
-                stdin = stdio::stdin(tx1).fuse() => (),
-                stream = stream(rx1, &mut tx2).fuse() => (),
-                stdout = stdio::stdout(rx2).fuse() => (),
+                _stdin = stdio::stdin(tx1).fuse() => (),
+                _stream = stream(rx1, &mut tx2).fuse() => (),
+                _stdout = stdio::stdout(rx2).fuse() => (),
             }
 
             Ok(())
@@ -195,9 +195,9 @@ async fn main() -> Result<()> {
             let (tx1, rx1) = futures::channel::mpsc::channel(256);
             let (tx2, rx2) = futures::channel::mpsc::channel(256);
             select! {
-                stdin = stdio::stdin(tx1).fuse() => (),
-                hotspot = hotspot(rx1, tx2, &args.file).fuse() => (),
-                stdout = stdio::stdout(rx2).fuse() => (),
+                _stdin = stdio::stdin(tx1).fuse() => (),
+                _hotspot = hotspot(rx1, tx2, &args.file).fuse() => (),
+                _stdout = stdio::stdout(rx2).fuse() => (),
             }
             Ok(())
         }
