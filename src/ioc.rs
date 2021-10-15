@@ -5,7 +5,7 @@ use std::fs;
 use std::path::Path;
 
 #[derive(Debug, Deserialize)]
-struct IOC {
+struct Ioc {
     #[serde(rename="Type")]
     t: String,
     #[serde(rename="Indicator")]
@@ -24,7 +24,7 @@ fn parse_domain_iocs(buf: &[u8]) -> Result<SuffixTree<String>> {
 
     let mut iocs = SuffixTree::new();
     for result in rdr.deserialize() {
-        let ioc: IOC = result?;
+        let ioc: Ioc = result?;
         if ioc.t == "domain" {
             debug!("Loaded ioc: {:?}", ioc);
             iocs.insert(&ioc.indicator);
@@ -52,7 +52,6 @@ foo,bar,asdf
 domain,account.logger.mobi,Easy Logger
 domain,97.logger.mobi,Easy Logger
 "#;
-        use std::iter::FromIterator;
         let iocs = parse_domain_iocs(csv).unwrap();
 
         let expected = &[
@@ -67,7 +66,9 @@ domain,97.logger.mobi,Easy Logger
             "97.logger.mobi",
             "webservicesdb.mobiispy.com",
         ];
-        let expected = SuffixTree::from_iter(expected.iter().cloned().map(String::from));
+        let expected = expected.into_iter()
+            .map(|s| String::from(*s))
+            .collect::<SuffixTree<_>>();
         assert_eq!(iocs, expected);
     }
 }

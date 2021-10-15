@@ -13,21 +13,33 @@ pub struct SuffixTree<T> {
 }
 
 impl<T> SuffixTree<T> {
+    #[inline]
     pub fn new() -> SuffixTree<T> {
-        SuffixTree {
-            hash: Some(HashMap::new()),
-        }
+        SuffixTree::default()
     }
 
     pub fn len(&self) -> usize {
         let mut n = 0;
         if let Some(hash) = &self.hash {
-            for (_k, v) in hash {
+            for v in hash.values() {
                 n += v.len();
             }
             n
         } else {
             1
+        }
+    }
+
+    #[inline]
+    pub fn is_empty(&self) -> bool {
+        self.hash.is_none()
+    }
+}
+
+impl<T> Default for SuffixTree<T> {
+    fn default() -> SuffixTree<T> {
+        SuffixTree {
+            hash: Some(HashMap::new()),
         }
     }
 }
@@ -59,12 +71,10 @@ impl SuffixTree<String> {
         let mut s = self;
         for part in split(domain) {
             if let Some(hash) = &mut s.hash {
-                if hash.contains_key(&part) {
-                    s = hash.get_mut(&part).unwrap();
-                } else {
+                if !hash.contains_key(&part) {
                     hash.insert(part.clone(), Box::new(SuffixTree::new()));
-                    s = hash.get_mut(&part).unwrap();
                 }
+                s = hash.get_mut(&part).unwrap();
             } else {
                 return;
             }
