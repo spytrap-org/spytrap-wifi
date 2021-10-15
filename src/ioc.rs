@@ -6,7 +6,7 @@ use std::path::Path;
 
 #[derive(Debug, Deserialize)]
 struct IOC {
-    #[serde(rename="#Type")]
+    #[serde(rename="Type")]
     t: String,
     #[serde(rename="Indicator")]
     indicator: String,
@@ -39,7 +39,7 @@ mod tests {
 
     #[test]
     fn parse_iocs() {
-        let csv = br#"#Type,Indicator,App
+        let csv = br#"Type,Indicator,App
 domain,flushdata.1topspy.com,1TopSpy
 domain,webservicesdb.mobiispy.com,Mobiispy
 domain,hellospy.com,HelloSpy
