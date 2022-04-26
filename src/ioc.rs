@@ -8,13 +8,13 @@ use std::path::Path;
 struct Ioc {
     names: Vec<String>,
     #[serde(default)]
-    packages: Vec<String>,
+    packages: Option<Vec<String>>,
     #[serde(default)]
-    certificates: Vec<String>,
+    certificates: Option<Vec<String>>,
     #[serde(default)]
-    websites: Vec<String>,
+    websites: Option<Vec<String>>,
     #[serde(default)]
-    c2: Vec<String>,
+    c2: Option<Vec<String>>,
 }
 
 pub fn load<P: AsRef<Path>>(path: P) -> Result<SuffixTree<String>> {
@@ -27,14 +27,18 @@ fn parse_domain_iocs(buf: &[u8]) -> Result<SuffixTree<String>> {
 
     let list = serde_yaml::from_slice::<Vec<Ioc>>(&buf)?;
     for item in list {
-        for domain in item.websites {
-            debug!("Loaded ioc (website): {:?}", domain);
-            tree.insert(&domain);
+        if let Some(websites) = item.websites {
+            for domain in websites {
+                debug!("Loaded ioc (website): {:?}", domain);
+                tree.insert(&domain);
+            }
         }
 
-        for domain in item.c2 {
-            debug!("Loaded ioc (c2): {:?}", domain);
-            tree.insert(&domain);
+        if let Some(c2) = item.c2 {
+            for domain in c2 {
+                debug!("Loaded ioc (c2): {:?}", domain);
+                tree.insert(&domain);
+            }
         }
     }
 

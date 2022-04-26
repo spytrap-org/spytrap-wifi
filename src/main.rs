@@ -177,10 +177,10 @@ async fn main() -> Result<()> {
             let (tx1, rx1) = futures::channel::mpsc::channel(256);
             let (mut tx2, rx2) = futures::channel::mpsc::channel(256);
             select! {
-                _stdin = stdio::stdin(tx1).fuse() => (),
-                _stream = stream(rx1, &mut tx2).fuse() => (),
-                _stdout = stdio::stdout(rx2).fuse() => (),
-            }
+                x = stdio::stdin(tx1).fuse() => x,
+                x = stream(rx1, &mut tx2).fuse() => x,
+                x = stdio::stdout(rx2).fuse() => x,
+            }?;
 
             Ok(())
         }
