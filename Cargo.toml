@@ -1,5 +1,5 @@
 [package]
-name = "spytrap"
+name = "spytrap-wifi"
 version = "0.1.0"
 authors = ["user"]
 edition = "2018"

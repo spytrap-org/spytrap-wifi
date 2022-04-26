@@ -1,4 +1,4 @@
-# spytrap
+# spytrap-wifi
 
 ## Setup a device
 

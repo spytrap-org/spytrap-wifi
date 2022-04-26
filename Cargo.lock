@@ -498,7 +498,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "spytrap"
+name = "spytrap-wifi"
 version = "0.1.0"
 dependencies = [
  "anyhow",
