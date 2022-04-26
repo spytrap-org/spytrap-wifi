@@ -11,7 +11,7 @@ pub enum SubCommand {
     Start(Start),
     Send(Send),
     Sniff(Sniff),
-    Stream,
+    Stream(Stream),
     Screen(Screen),
     Hotspot(Hotspot),
 }
@@ -26,6 +26,8 @@ pub struct Start {
     pub screen: String,
     #[structopt(short="S", default_value="foo.sock")]
     pub socket: String,
+    #[structopt(short, long, default_value="ioc.yaml")]
+    pub rules: String,
 }
 
 #[derive(Debug, StructOpt)]
@@ -39,6 +41,12 @@ pub struct Send {
 pub struct Sniff {
     #[structopt(short="i", default_value="en0")]
     pub device: String,
+}
+
+#[derive(Debug, StructOpt)]
+pub struct Stream {
+    #[structopt(short, long, default_value="ioc.yaml")]
+    pub rules: String,
 }
 
 #[derive(Debug, StructOpt)]

@@ -37,9 +37,9 @@ async fn send<S: Sink<String> + Unpin>(sink: &mut S, value: String) -> Result<()
     sink.send(value).await.map_err(|_| anyhow!("sink error"))
 }
 
-async fn stream<R: Stream<Item=String> + Unpin, S: Sink<String> + Unpin>(mut rx: R, tx: &mut S) -> Result<()> {
-    let iocs = ioc::load("ioc.yaml")
-        .context("Failed to load iocs")?;
+async fn stream<R: Stream<Item=String> + Unpin, S: Sink<String> + Unpin>(mut rx: R, tx: &mut S, path: &str) -> Result<()> {
+    let iocs = ioc::load(path)
+        .with_context(|| anyhow!("Failed to load iocs from {:?}", path))?;
     info!("Loaded {} known IOCs", iocs.len());
 
     while let Some(line) = rx.next().await {
@@ -154,7 +154,7 @@ async fn start(args: Start) -> Result<()> {
         hotspot = hotspot(rx1, screen_tx.clone(), &args.file).fuse() => hotspot,
 
         sniff = sniff(tx2, &args.device).fuse() => sniff,
-        stream = stream(rx2, &mut screen_tx).fuse() => stream,
+        stream = stream(rx2, &mut screen_tx, &args.rules).fuse() => stream,
 
         screen = screen(screen_rx, &args.screen).fuse() => screen,
     }
@@ -173,12 +173,12 @@ async fn main() -> Result<()> {
             let (tx, _rx) = futures::channel::mpsc::channel(256);
             sniff(tx, &args.device).await
         }
-        SubCommand::Stream => {
+        SubCommand::Stream(args) => {
             let (tx1, rx1) = futures::channel::mpsc::channel(256);
             let (mut tx2, rx2) = futures::channel::mpsc::channel(256);
             select! {
                 x = stdio::stdin(tx1).fuse() => x,
-                x = stream(rx1, &mut tx2).fuse() => x,
+                x = stream(rx1, &mut tx2, &args.rules).fuse() => x,
                 x = stdio::stdout(rx2).fuse() => x,
             }?;
 
