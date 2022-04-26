@@ -2,16 +2,16 @@ use env_logger::Env;
 use futures::FutureExt;
 use futures::select;
 use futures::{Sink, SinkExt, Stream, StreamExt};
-use spytrap::args::{Args, SubCommand};
 use structopt::StructOpt;
-use spytrap::args::Start;
-use spytrap::errors::*;
-use spytrap::hostapd;
-use spytrap::json;
-use spytrap::ioc;
-use spytrap::rpc;
-use spytrap::stdio;
-use spytrap::suffix::SuffixTree;
+use spytrap_wifi::args::{Args, SubCommand};
+use spytrap_wifi::args::Start;
+use spytrap_wifi::errors::*;
+use spytrap_wifi::hostapd;
+use spytrap_wifi::json;
+use spytrap_wifi::ioc;
+use spytrap_wifi::rpc;
+use spytrap_wifi::stdio;
+use spytrap_wifi::suffix::SuffixTree;
 use std::process::Stdio;
 use tokio::process::Command;
 use tokio::io::AsyncWriteExt;
@@ -38,7 +38,7 @@ async fn send<S: Sink<String> + Unpin>(sink: &mut S, value: String) -> Result<()
 }
 
 async fn stream<R: Stream<Item=String> + Unpin, S: Sink<String> + Unpin>(mut rx: R, tx: &mut S) -> Result<()> {
-    let iocs = ioc::load("network.csv")
+    let iocs = ioc::load("ioc.yaml")
         .context("Failed to load iocs")?;
     info!("Loaded {} known IOCs", iocs.len());
 

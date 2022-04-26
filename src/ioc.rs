@@ -4,14 +4,17 @@ use crate::suffix::SuffixTree;
 use std::fs;
 use std::path::Path;
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, PartialEq, Deserialize)]
 struct Ioc {
-    #[serde(rename="Type")]
-    t: String,
-    #[serde(rename="Indicator")]
-    indicator: String,
-    #[serde(rename="App")]
-    app: String,
+    names: Vec<String>,
+    #[serde(default)]
+    packages: Vec<String>,
+    #[serde(default)]
+    certificates: Vec<String>,
+    #[serde(default)]
+    websites: Vec<String>,
+    #[serde(default)]
+    c2: Vec<String>,
 }
 
 pub fn load<P: AsRef<Path>>(path: P) -> Result<SuffixTree<String>> {
@@ -20,17 +23,22 @@ pub fn load<P: AsRef<Path>>(path: P) -> Result<SuffixTree<String>> {
 }
 
 fn parse_domain_iocs(buf: &[u8]) -> Result<SuffixTree<String>> {
-    let mut rdr = csv::Reader::from_reader(buf);
+    let mut tree = SuffixTree::new();
 
-    let mut iocs = SuffixTree::new();
-    for result in rdr.deserialize() {
-        let ioc: Ioc = result?;
-        if ioc.t == "domain" {
-            debug!("Loaded ioc: {:?}", ioc);
-            iocs.insert(&ioc.indicator);
+    let list = serde_yaml::from_slice::<Vec<Ioc>>(&buf)?;
+    for item in list {
+        for domain in item.websites {
+            debug!("Loaded ioc (website): {:?}", domain);
+            tree.insert(&domain);
+        }
+
+        for domain in item.c2 {
+            debug!("Loaded ioc (c2): {:?}", domain);
+            tree.insert(&domain);
         }
     }
-    Ok(iocs)
+
+    Ok(tree)
 }
 
 #[cfg(test)]
@@ -39,32 +47,28 @@ mod tests {
 
     #[test]
     fn parse_iocs() {
-        let csv = br#"Type,Indicator,App
-domain,flushdata.1topspy.com,1TopSpy
-domain,webservicesdb.mobiispy.com,Mobiispy
-domain,hellospy.com,HelloSpy
-domain,mobiispy.com,Mobiispy
-domain,1topspy.com,1TopSpy
-domain,flushdbd.maxxspy.com,Maxxspy
-domain,maxxspy.com,Maxxspy
-domain,flushdata2.hellospy.com,HelloSpy
-foo,bar,asdf
-domain,account.logger.mobi,Easy Logger
-domain,97.logger.mobi,Easy Logger
+        let csv = br#"---
+- names:
+    - Foobar
+  packages:
+    - com.foobar.system
+    - com.foobar
+  websites:
+    - foobar.com
+    - checkout.whatever.com
+  c2:
+    - api.foobar.com
+    - foobar.com
+    - sneaky.example.com
 "#;
         let iocs = parse_domain_iocs(csv).unwrap();
 
         let expected = &[
-            "account.logger.mobi",
-            "mobiispy.com",
-            "flushdbd.maxxspy.com",
-            "flushdata.1topspy.com",
-            "hellospy.com",
-            "1topspy.com",
-            "flushdata2.hellospy.com",
-            "maxxspy.com",
-            "97.logger.mobi",
-            "webservicesdb.mobiispy.com",
+            "foobar.com",
+            "checkout.whatever.com",
+            "api.foobar.com",
+            "foobar.com",
+            "sneaky.example.com",
         ];
         let expected = expected.into_iter()
             .map(|s| String::from(*s))
