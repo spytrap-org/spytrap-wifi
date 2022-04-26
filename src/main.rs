@@ -1,8 +1,8 @@
+use clap::Parser;
 use env_logger::Env;
 use futures::FutureExt;
 use futures::select;
 use futures::{Sink, SinkExt, Stream, StreamExt};
-use structopt::StructOpt;
 use spytrap_wifi::args::{Args, SubCommand};
 use spytrap_wifi::args::Start;
 use spytrap_wifi::errors::*;
@@ -165,7 +165,7 @@ async fn main() -> Result<()> {
     env_logger::init_from_env(Env::default()
         .default_filter_or("spytrap=info"));
 
-    let args = Args::from_args();
+    let args = Args::parse();
     match args.subcommand {
         SubCommand::Start(args) => start(args).await,
         SubCommand::Send(args) => rpc::send(&args.socket, args.value).await,
