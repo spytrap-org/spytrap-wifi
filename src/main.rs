@@ -38,7 +38,7 @@ async fn send<S: Sink<String> + Unpin>(sink: &mut S, value: String) -> Result<()
 }
 
 async fn stream<R: Stream<Item=String> + Unpin, S: Sink<String> + Unpin>(mut rx: R, tx: &mut S) -> Result<()> {
-    let iocs = ioc::load("network.csv")
+    let iocs = ioc::load("ioc.yaml")
         .context("Failed to load iocs")?;
     info!("Loaded {} known IOCs", iocs.len());
 

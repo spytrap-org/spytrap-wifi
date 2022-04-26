@@ -15,7 +15,7 @@
 
 ## Download IOCs
 
-    https://raw.githubusercontent.com/Te-k/stalkerware-indicators/master/network.csv
+    https://raw.githubusercontent.com/Te-k/stalkerware-indicators/master/ioc.yaml
 
 ## License
 

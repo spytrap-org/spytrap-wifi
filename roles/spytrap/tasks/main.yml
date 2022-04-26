@@ -19,8 +19,8 @@
     dest: '{{ item.dest }}'
     mode: '{{ item.mode }}'
   with_items:
-  - name: ../../../network.csv
-    dest: /spytrap/network.csv
+  - name: ../../../ioc.yaml
+    dest: /spytrap/ioc.yaml
     mode: '0644'
   - name: waveshare.py
     dest: /spytrap/waveshare.py
