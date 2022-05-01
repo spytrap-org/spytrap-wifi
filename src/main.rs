@@ -95,7 +95,7 @@ async fn screen<S: Stream<Item=String> + Unpin>(mut stream: S, bin: &str) -> Res
     while let Some(item) = stream.next().await {
         info!("Sending to screen: {:?}", item);
         let line = format!("{}\n", item);
-        stdin.write(line.as_bytes()).await?;
+        stdin.write_all(line.as_bytes()).await?;
     }
 
     join.await.ok();

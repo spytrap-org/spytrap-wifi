@@ -1,21 +1,7 @@
 use crate::errors::*;
-use serde::Deserialize;
 use crate::suffix::SuffixTree;
 use std::fs;
 use std::path::Path;
-
-#[derive(Debug, PartialEq, Deserialize)]
-struct Ioc {
-    names: Vec<String>,
-    #[serde(default)]
-    packages: Option<Vec<String>>,
-    #[serde(default)]
-    certificates: Option<Vec<String>>,
-    #[serde(default)]
-    websites: Option<Vec<String>>,
-    #[serde(default)]
-    c2: Option<Vec<String>>,
-}
 
 pub fn load<P: AsRef<Path>>(path: P) -> Result<SuffixTree<String>> {
     let list = fs::read(path)?;
@@ -24,22 +10,20 @@ pub fn load<P: AsRef<Path>>(path: P) -> Result<SuffixTree<String>> {
 
 fn parse_domain_iocs(buf: &[u8]) -> Result<SuffixTree<String>> {
     let mut tree = SuffixTree::new();
+    let list = stalkerware_indicators::parse_from_buf(buf)?;
 
-    let list = serde_yaml::from_slice::<Vec<Ioc>>(&buf)?;
     for item in list {
-        if let Some(websites) = item.websites {
-            for domain in websites {
-                debug!("Loaded ioc (website): {:?}", domain);
-                tree.insert(&domain);
-            }
+        for domain in item.websites {
+            debug!("Loaded ioc (website): {:?}", domain);
+            tree.insert(&domain);
         }
 
-        if let Some(c2) = item.c2 {
-            for domain in c2 {
-                debug!("Loaded ioc (c2): {:?}", domain);
-                tree.insert(&domain);
-            }
+        for domain in item.c2.domains {
+            debug!("Loaded ioc (c2): {:?}", domain);
+            tree.insert(&domain);
         }
+
+        // TODO: ip addresses are not matched yet
     }
 
     Ok(tree)
@@ -51,28 +35,33 @@ mod tests {
 
     #[test]
     fn parse_iocs() {
-        let csv = br#"---
-- names:
-    - Foobar
+        let buf = br#"---
+- name: OwnSpy
+  names:
+  - OwnSpy
+  - WebDetetive
   packages:
-    - com.foobar.system
-    - com.foobar
+  - com.ownspy.android
+  - org.system.kernel
+  certificates:
+  - CA5304E94F4BC97DA9D147E76858DBF70AB8B4E6
+  - 14A071616D4BC37F08BE865D375101F4C963777A
   websites:
-    - foobar.com
-    - checkout.whatever.com
+  - mobileinnova.net
+  - webdetetive.com.br
   c2:
-    - api.foobar.com
-    - foobar.com
-    - sneaky.example.com
+    ips: []
+    domains:
+    - 6287970dd9.era3000.com
+    - user.ownspy.es
 "#;
-        let iocs = parse_domain_iocs(csv).unwrap();
+        let iocs = parse_domain_iocs(buf).unwrap();
 
         let expected = &[
-            "foobar.com",
-            "checkout.whatever.com",
-            "api.foobar.com",
-            "foobar.com",
-            "sneaky.example.com",
+            "mobileinnova.net",
+            "webdetetive.com.br",
+            "6287970dd9.era3000.com",
+            "user.ownspy.es",
         ];
         let expected = expected.into_iter()
             .map(|s| String::from(*s))

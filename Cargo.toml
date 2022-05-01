@@ -17,3 +17,4 @@ tokio = { version="1", features=["macros", "rt-multi-thread", "process", "io-uti
 rand = "0.8"
 serde_yaml = "0.8.23"
 clap = { version = "3.1.12", features = ["derive"] }
+stalkerware-indicators = "0.1"
