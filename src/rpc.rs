@@ -14,7 +14,7 @@ use futures::SinkExt;
 pub async fn send(path: &str, msg: String) -> Result<()> {
     let mut stream = UnixStream::connect(path).await?;
     let line = format!("{}\n", msg);
-    stream.write(line.as_bytes()).await?;
+    stream.write_all(line.as_bytes()).await?;
     Ok(())
 }
 
