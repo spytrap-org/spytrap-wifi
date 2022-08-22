@@ -1,3 +1,4 @@
 /target
 /ioc.yaml
 *.sw[op]
+/stalkerware-indicators
