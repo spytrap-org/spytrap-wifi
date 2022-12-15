@@ -37,7 +37,7 @@ pub async fn spawn(path: &str, tx: Sender<String>) -> Result<()> {
     }
 
     println!("Binding rpc socket: {:?}", path.display());
-    let listener = UnixListener::bind(&path)?;
+    let listener = UnixListener::bind(path)?;
 
     // TODO: is there a way we can drop this?
     // TODO: this is basically single user embedded, but still

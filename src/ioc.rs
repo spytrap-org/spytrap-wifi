@@ -83,7 +83,7 @@ mod tests {
             "c9db9bbc8d.era3000.com",
             "user.ownspy.es",
         ];
-        let expected = expected.into_iter()
+        let expected = expected.iter()
             .map(|s| String::from(*s))
             .collect::<SuffixTree<_>>();
         assert_eq!(iocs, expected);

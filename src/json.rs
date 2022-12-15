@@ -1,7 +1,7 @@
 use crate::errors::*;
 use serde::Deserialize;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Eq)]
 pub enum Source {
     DNS,
     TLS,
@@ -18,7 +18,7 @@ impl Source {
     }
 }
 
-#[derive(Debug, PartialEq, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Deserialize)]
 pub enum Pkt {
     Ether((Dummy, IP)),
 }
@@ -31,10 +31,10 @@ impl Pkt {
     }
 }
 
-#[derive(Debug, PartialEq, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Deserialize)]
 pub struct Dummy {}
 
-#[derive(Debug, PartialEq, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Deserialize)]
 pub enum IP {
     IPv4((Dummy, IPv4)),
 }
@@ -48,7 +48,7 @@ impl IP {
     }
 }
 
-#[derive(Debug, PartialEq, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Deserialize)]
 pub enum IPv4 {
     TCP((Dummy, TCP)),
     UDP((Dummy, UDP)),
@@ -64,7 +64,7 @@ impl IPv4 {
     }
 }
 
-#[derive(Debug, PartialEq, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Deserialize)]
 pub enum TCP {
     TLS(TLS),
     HTTP(HTTP),
@@ -80,7 +80,7 @@ impl TCP {
     }
 }
 
-#[derive(Debug, PartialEq, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Deserialize)]
 pub enum TLS {
     ClientHello(ClientHello),
 }
@@ -94,7 +94,7 @@ impl TLS {
     }
 }
 
-#[derive(Debug, PartialEq, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Deserialize)]
 pub struct ClientHello {
     hostname: String,
 }
@@ -106,7 +106,7 @@ impl ClientHello {
     }
 }
 
-#[derive(Debug, PartialEq, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Deserialize)]
 pub struct HTTP {
     host: String,
 }
@@ -118,7 +118,7 @@ impl HTTP {
     }
 }
 
-#[derive(Debug, PartialEq, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Deserialize)]
 pub enum UDP {
     DNS(DNS),
 }
@@ -132,7 +132,7 @@ impl UDP {
     }
 }
 
-#[derive(Debug, PartialEq, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Deserialize)]
 pub enum DNS {
     Request(DNSRequest),
 }
@@ -146,7 +146,7 @@ impl DNS {
     }
 }
 
-#[derive(Debug, PartialEq, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Deserialize)]
 pub struct DNSRequest {
     questions: Vec<(String, String)>,
 }

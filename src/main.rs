@@ -108,7 +108,7 @@ async fn sniff<S: Sink<String> + Unpin>(mut sink: S, dev: &str) -> Result<()> {
         info!("Spawning sniffglue");
 
         let mut cmd = Command::new("sniffglue");
-        cmd.args(&["--json", dev]);
+        cmd.args(["--json", dev]);
 
         // Specify that we want the command's standard output piped back to us.
         // By default, standard input/output/error will be inherited from the

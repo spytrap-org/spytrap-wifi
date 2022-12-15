@@ -111,7 +111,7 @@ mod tests {
     #[test]
     fn exact() {
         let mut s = SuffixTree::new();
-        s.insert("github.com".into());
+        s.insert("github.com");
         let m = s.matches("github.com");
         assert!(m);
     }
@@ -119,7 +119,7 @@ mod tests {
     #[test]
     fn subdomain() {
         let mut s = SuffixTree::new();
-        s.insert("github.com".into());
+        s.insert("github.com");
         let m = s.matches("www.github.com");
         assert!(m);
     }
@@ -127,7 +127,7 @@ mod tests {
     #[test]
     fn lots_of_subdomains() {
         let mut s = SuffixTree::new();
-        s.insert("github.com".into());
+        s.insert("github.com");
         let m = s.matches("a.b.c.d.e.f.g.h.i.github.com");
         assert!(m);
     }
@@ -135,7 +135,7 @@ mod tests {
     #[test]
     fn not_tld() {
         let mut s = SuffixTree::new();
-        s.insert("github.com".into());
+        s.insert("github.com");
         let m = s.matches("com");
         assert!(!m);
     }
@@ -143,7 +143,7 @@ mod tests {
     #[test]
     fn not_other_domain() {
         let mut s = SuffixTree::new();
-        s.insert("github.com".into());
+        s.insert("github.com");
         let m = s.matches("example.com");
         assert!(!m);
     }
@@ -151,7 +151,7 @@ mod tests {
     #[test]
     fn not_other_subdomain() {
         let mut s = SuffixTree::new();
-        s.insert("foo.example.com".into());
+        s.insert("foo.example.com");
         let m = s.matches("bar.example.com");
         assert!(!m);
     }

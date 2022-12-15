@@ -92,7 +92,7 @@ pub async fn write_config(path: &str, interface: &str, ssid: &str, password: &st
 // TODO: hostapd should be a child process instead of going through systemd
 pub async fn restart() -> Result<()> {
 	Command::new("systemctl")
-		.args(&["restart", "hostapd"])
+		.args(["restart", "hostapd"])
 		.spawn()?
 		.wait().await?;
 	Ok(())
