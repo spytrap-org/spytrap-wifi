@@ -18,6 +18,11 @@ fn parse_domain_iocs(buf: &[u8]) -> Result<SuffixTree<String>> {
             tree.insert(&domain);
         }
 
+        for domain in item.distribution {
+            debug!("Loaded ioc (distribution): {:?}", domain);
+            tree.insert(&domain);
+        }
+
         for domain in item.c2.domains {
             debug!("Loaded ioc (c2): {:?}", domain);
             tree.insert(&domain);
@@ -39,7 +44,9 @@ mod tests {
 - name: OwnSpy
   names:
   - OwnSpy
+  - SaferSpy
   - WebDetetive
+  type: stalkerware
   packages:
   - com.ownspy.android
   - org.system.kernel
@@ -48,19 +55,32 @@ mod tests {
   - 14A071616D4BC37F08BE865D375101F4C963777A
   websites:
   - mobileinnova.net
+  - ownspy.com
+  - en.ownspy.com
   - webdetetive.com.br
+  - ownspy.es
+  - saferspy.com
+  - panel.webdetetive.com.br
+  #- era3000.com
+  distribution:
+  - 6287970dd9.era3000.com
+  - c9db9bbc8d.era3000.com
   c2:
-    ips: []
     domains:
-    - 6287970dd9.era3000.com
     - user.ownspy.es
 "#;
         let iocs = parse_domain_iocs(buf).unwrap();
 
         let expected = &[
             "mobileinnova.net",
+            "ownspy.com",
+            "en.ownspy.com",
             "webdetetive.com.br",
+            "ownspy.es",
+            "saferspy.com",
+            "panel.webdetetive.com.br",
             "6287970dd9.era3000.com",
+            "c9db9bbc8d.era3000.com",
             "user.ownspy.es",
         ];
         let expected = expected.into_iter()
